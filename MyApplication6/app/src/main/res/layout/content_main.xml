@@ -11,10 +11,28 @@
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="com.example.myapplication.MainActivity"
     tools:showIn="@layout/activity_main">
-
-    <EditText
-        android:id="@+id/main_et_show"
-        android:layout_width="wrap_content"
+    <Button
+        android:id="@+id/btnGPSShowLocation"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="Hello World!" />
+        android:layout_alignLeft="@+id/btnNWShowLocation"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="36dp"
+        android:minWidth="100dp"
+        android:text="Show Location\n(GPS)" />
+
+    <Button
+        android:id="@+id/btnNWShowLocation"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/btnGPSShowLocation"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="44dp"
+        android:minWidth="100dp"
+        android:text="Show Location\n(network provider)" />
+    <!--<EditText-->
+        <!--android:id="@+id/main_et_show"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="Hello World!" />-->
 </RelativeLayout>

@@ -1,91 +1,58 @@
 package com.example.myapplication;
 
-import android.content.Context;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
+import android.content.DialogInterface;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.telephony.CellInfoGsm;
 import android.telephony.CellLocation;
-import android.telephony.CellSignalStrengthGsm;
 import android.telephony.PhoneStateListener;
 import android.telephony.ServiceState;
 import android.telephony.SignalStrength;
 import android.telephony.TelephonyManager;
 import android.telephony.gsm.GsmCellLocation;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.EditText;
-import android.widget.TextView;
+import android.app.Service;
+import android.content.Context;
+import android.content.Intent;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.os.Bundle;
+import android.os.IBinder;
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.location.Location;
+import android.location.LocationManager;
+import android.os.Bundle;
+import android.provider.Settings;
+import android.view.Menu;
+import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
-
 public class MainActivity extends AppCompatActivity {
-    private static final String TAG = MainActivity.class.getSimpleName();
-    private double latitude = 0.0;
-    private double longitude = 0.0;
-    private TextView info;
-    private LocationManager locationManager;
-    private EditText show;
+
+    Button btnGPSShowLocation;
+    Button btnNWShowLocation;
+
+    AppLocationService appLocationService;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        show =(EditText) findViewById(R.id.main_et_show);
-        // get LocationManager service
-        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        // get get Last Known Location
-        Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-        // show the information of location in EditText
-        updateView(location);
 
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
-                0, 0, new LocationListener() {
-                    @Override
-                    public void onLocationChanged(Location location) {
-                        // 当GPS定位信息发生改变时，更新位置
-                        updateView(location);
-                    }
-                    @Override
-                    public void onProviderDisabled(String provider) {
-                        updateView(null);
-                    }
-                    @Override
-                    public void onProviderEnabled(String provider) {
-                        // 当GPS LocationProvider可用时，更新位置
-                        updateView(locationManager
-                                .getLastKnownLocation(provider));
-                    }
-                    @Override
-                    public void onStatusChanged(String provider, int status, Bundle extras) {
-                    }
-                });
 
-//        while(location==null) {
-//            //update when the GPS signal
-//            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
-//            if(location!=null){
-//                System.out.println("hahahaahahahhahahahha :"+location.getAltitude());
-//            }
-//        }
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+
         TelephonyManager telephonyManager = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
-        PhoneStateListener phoneStateListener = new PhoneStateListener() {
+           PhoneStateListener phoneStateListener = new PhoneStateListener() {
             public void onCallForwardingIndicatorChanged(boolean cfi) {}
             public void onCallStateChanged(int state, String incomingNumber) {}
             public void onCellLocationChanged(CellLocation location) {}
@@ -125,92 +92,91 @@ public class MainActivity extends AppCompatActivity {
             System.out.println("mnc " +mnc);
         }
 
-    }
-//    private Location updateView(Location location) {
-//        System.out.println("--------GPS--test--------");
-//        String latLongString;
-//        double lat = 0;
-//        double lng=0;
-//
-//        if (location != null) {
-//            lat = location.getLatitude();
-//            lng = location.getLongitude();
-//            latLongString = "纬度:" + lat + "\n经度:" + lng;
-//            System.out.println("经度："+lng+"纬度："+lat);
-//        } else {
-//            latLongString = "无法获取地理信息，请稍后...";
-//            System.out.println("waiting>>>>>>>");
-//        }
-//        if(lat!=0){
-//            System.out.println("--------feed back----------"+ String.valueOf(lat));
-//        }
-//
-//        Toast.makeText(getApplicationContext(), latLongString, Toast.LENGTH_SHORT).show();
-//
-//        return location;
-//
-//    }
-    private void updateView(Location location) {
-        System.out.println("调用阿萨阿萨撒阿萨德啊圈啊爱谁谁啊阿萨");
 
-        if (location != null) {
-            StringBuffer sb = new StringBuffer();
 
-            sb.append("GPS information：\nLongitude：");
+        appLocationService = new AppLocationService(
+                MainActivity.this);
+        btnGPSShowLocation = (Button) findViewById(R.id.btnGPSShowLocation);
+        btnGPSShowLocation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View arg0) {
 
-            sb.append(location.getLongitude());
+                Location gpsLocation = appLocationService
+                        .getLocation(LocationManager.GPS_PROVIDER);
 
-            sb.append("\nLatitude：");
+                if (gpsLocation != null) {
+                    double latitude = gpsLocation.getLatitude();
+                    double longitude = gpsLocation.getLongitude();
+                    Toast.makeText(
+                            getApplicationContext(),
+                            "Mobile Location (GPS): \nLatitude: " + latitude
+                                    + "\nLongitude: " + longitude,
+                            Toast.LENGTH_LONG).show();
+                } else {
+                    showSettingsAlert("GPS");
+                }
 
-            sb.append(location.getLatitude());
-            sb.append("\nAltitude：");
+            }
+        });
 
-            sb.append(location.getAltitude());
+        btnNWShowLocation = (Button) findViewById(R.id.btnNWShowLocation);
+        btnNWShowLocation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View arg0) {
 
-            sb.append("\nSpeed：");
+                Location nwLocation = appLocationService
+                        .getLocation(LocationManager.NETWORK_PROVIDER);
 
-            sb.append(location.getSpeed());
+                if (nwLocation != null) {
+                    double latitude = nwLocation.getLatitude();
+                    double longitude = nwLocation.getLongitude();
+                    Toast.makeText(
+                            getApplicationContext(),
+                            "Mobile Location (NW): \nLatitude: " + latitude
+                                    + "\nLongitude: " + longitude,
+                            Toast.LENGTH_LONG).show();
+                } else {
+                    showSettingsAlert("NETWORK");
+                }
 
-            sb.append("\nBearing：");
+            }
+        });
 
-            sb.append(location.getBearing());
-
-            sb.append("\nAccuracy：");
-
-            sb.append(location.getAccuracy());
-
-            show.setText(sb.toString());
-
-        } else {
-
-            // if Location is empty then clear the EditText
-            show.setText("");
-        }
     }
 
+    public void showSettingsAlert(String provider) {
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(
+                MainActivity.this);
 
+        alertDialog.setTitle(provider + " SETTINGS");
 
+        alertDialog
+                .setMessage(provider + " is not enabled! Want to go to settings menu?");
 
+        alertDialog.setPositiveButton("Settings",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent intent = new Intent(
+                                Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                        MainActivity.this.startActivity(intent);
+                    }
+                });
+
+        alertDialog.setNegativeButton("Cancel",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+
+        alertDialog.show();
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
 }
+
