@@ -3,6 +3,7 @@ package com.example.myapplication;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.provider.Settings.Secure;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -80,6 +81,20 @@ public class MainActivity extends AppCompatActivity {
                         PhoneStateListener.LISTEN_SIGNAL_STRENGTHS);
 
         GsmCellLocation cellLocation = (GsmCellLocation) telephonyManager.getCellLocation();
+        String Deviceid =telephonyManager.getDeviceId();
+        System.out.println("device_id " +Deviceid);
+        String  IMSI;
+        IMSI = telephonyManager.getSubscriberId();
+        System.out.println("IMSI :" +IMSI);
+        // Device model
+        String PhoneModel = android.os.Build.MODEL;
+
+        // Android version
+        String AndroidVersion = android.os.Build.VERSION.RELEASE;
+        //info
+        System.out.println("PhoneModel :" +PhoneModel);
+        System.out.println("AndroidVersion :" +AndroidVersion);
+
         int cid = cellLocation.getCid();
         int lac = cellLocation.getLac();
         System.out.println("cid " +cid);
