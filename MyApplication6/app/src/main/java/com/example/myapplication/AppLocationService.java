@@ -17,8 +17,9 @@ public class AppLocationService extends Service implements LocationListener {
     protected LocationManager locationManager;
     Location location;
 
-    private static final long MIN_DISTANCE_FOR_UPDATE = 10;
-    private static final long MIN_TIME_FOR_UPDATE = 1000 * 60 * 2;
+    private static final long MIN_DISTANCE_FOR_UPDATE = 1;//1m
+    private static final long MIN_TIME_FOR_UPDATE = 1000 * 2;//2 ms
+
 
     public AppLocationService(Context context) {
         locationManager = (LocationManager) context
@@ -56,6 +57,5 @@ public class AppLocationService extends Service implements LocationListener {
     public IBinder onBind(Intent arg0) {
         return null;
     }
-
 }
 

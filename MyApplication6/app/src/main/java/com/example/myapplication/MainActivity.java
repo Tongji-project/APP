@@ -1,6 +1,9 @@
 package com.example.myapplication;
 
+import android.content.BroadcastReceiver;
 import android.content.DialogInterface;
+import android.content.IntentFilter;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.provider.Settings.Secure;
@@ -51,6 +54,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
 
+        //注册一个接受广播类型
+        registerReceiver(new BatteryBroadcastReceiver(), new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
 
         TelephonyManager telephonyManager = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
            PhoneStateListener phoneStateListener = new PhoneStateListener() {
@@ -80,7 +85,13 @@ public class MainActivity extends AppCompatActivity {
                         PhoneStateListener.LISTEN_SERVICE_STATE |
                         PhoneStateListener.LISTEN_SIGNAL_STRENGTHS);
 
+
         GsmCellLocation cellLocation = (GsmCellLocation) telephonyManager.getCellLocation();
+
+        Long tsLong = System.currentTimeMillis()/1000;
+        String timeStamp = tsLong.toString();
+        System.out.println("timeStamp " +timeStamp);
+
         String Deviceid =telephonyManager.getDeviceId();
         System.out.println("device_id " +Deviceid);
         String  IMSI;
@@ -111,6 +122,32 @@ public class MainActivity extends AppCompatActivity {
 
         appLocationService = new AppLocationService(
                 MainActivity.this);
+        /////////////////////
+
+
+        Location GpsLocation = appLocationService.getLocation(LocationManager.GPS_PROVIDER);
+        if (GpsLocation != null) {
+
+            double latitude = GpsLocation.getLatitude();
+            double longitude = GpsLocation.getLongitude();
+            System.out.println("latitude " +latitude);
+            System.out.println("longitude " +longitude);
+
+
+        }
+
+
+        Location netLocation = appLocationService.getLocation(LocationManager.NETWORK_PROVIDER);
+
+        if (netLocation != null) {
+            double latitude = netLocation.getLatitude();
+            double longitude = netLocation.getLongitude();
+            System.out.println("latitude " +latitude);
+            System.out.println("longitude " +longitude);
+        }
+
+        ///////////////////
+
         btnGPSShowLocation = (Button) findViewById(R.id.btnGPSShowLocation);
         btnGPSShowLocation.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -139,8 +176,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View arg0) {
 
-                Location nwLocation = appLocationService
-                        .getLocation(LocationManager.NETWORK_PROVIDER);
+                Location nwLocation = appLocationService.getLocation(LocationManager.NETWORK_PROVIDER);
 
                 if (nwLocation != null) {
                     double latitude = nwLocation.getLatitude();
@@ -192,6 +228,19 @@ public class MainActivity extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
+    /**接受电量改变广播*/
+    class BatteryBroadcastReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
 
+            if(intent.getAction().equals(Intent.ACTION_BATTERY_CHANGED)){
+
+                int level = intent.getIntExtra("level", 0);
+                int scale = intent.getIntExtra("scale", 100);
+                int curPower = (level * 100 / scale);
+                System.out.println("curPower :"+curPower);
+                }
+            }
+        }
 }
 
