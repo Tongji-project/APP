@@ -1,4 +1,4 @@
-package sse.tongji.localization;
+package com.tongjiapp.remirobert.tongji_localisation;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;
