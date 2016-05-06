@@ -20,9 +20,8 @@ interface DeviceLocationManagerListener {
 
 public class DeviceLocationManager implements LocationListener {
 
-    private static final long MIN_DISTANCE_FOR_UPDATE = 1;
+    private static final long MIN_DISTANCE_FOR_UPDATE = 0;
     private static final long MIN_TIME_FOR_UPDATE = 0;
-    private static final int PERMISSION_ACCESS_FINE_LOCATION = 10;
 
     private Context mContext;
     private LocationManager mLocationManager;

@@ -1,8 +1,8 @@
 package com.tongjiapp.remirobert.tongji_localisation;
 
 import android.content.Context;
+import android.util.Log;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -27,70 +29,75 @@ interface RecordApiManagerListener {
 
 public class RecordApiManager {
 
-    private static final String BASE_URL = "http://tztztztztz.org:3000/";
+    private static final String BASE_URL = "http://192.168.0.101:3000/";
 
     private Context mContext;
-    private Retrofit retrofit = new Retrofit.Builder()
-        .baseUrl(BASE_URL).addConverterFactory(GsonConverterFactory.create()).build();
+    private Retrofit mRetrofit;
+    private RecordApiService mRecordApiService;
 
     public void createNewDevice(Device device, final RecordApiManagerListener listener) {
 
-        final String jsonString = "[\n" +
-                " {\n" +
-                "  \"value\": 1\n" +
-                " }\n" +
-                "]";
-
-
-        JSONObject student1 = new JSONObject();
+        JSONObject json;
         try {
-            student1.put("did", "3");
-            student1.put("test", "OK");
-
+            json = device.toJson();
         } catch (JSONException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            listener.onReceiveReponse(RecordApiManagerStatus.FAILED);
+            return;
         }
 
-        JSONObject student2 = new JSONObject();
-        try {
-            student2.put("id", "3");
-            student2.put("test", "OK");
-
-        } catch (JSONException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-
-
-        JSONArray jsonArray = new JSONArray();
-
-        jsonArray.put(student1);
-        jsonArray.put(student2);
-
-
-        List<Device> deviceList = new ArrayList<Device>();
-        deviceList.add(device);
-        deviceList.add(device);
-
-        RecordApiService recordApiService = retrofit.create(RecordApiService.class);
-
-        Call<ResponseApi> call = recordApiService.postRecords(deviceList);
-
+//        Call<ResponseApi> call = mRecordApiService.postDevice(json);
+//
 //        call.enqueue(new Callback<ResponseApi>() {
 //            @Override
 //            public void onResponse(Call<ResponseApi> call, Response<ResponseApi> response) {
 //                Log.v("OK", "response");
+//                listener.onReceiveReponse(RecordApiManagerStatus.SUCCESS);
 //            }
 //
 //            @Override
 //            public void onFailure(Call<ResponseApi> call, Throwable t) {
 //                Log.e("Err", "Error");
+//                listener.onReceiveReponse(RecordApiManagerStatus.FAILED);
 //            }
 //        });
     }
 
+    public void createRecords(List<Record> records, final RecordApiManagerListener listener) {
+        List<JSONObject> recordsList = new ArrayList<JSONObject>();
+
+        for (Record record : records) {
+            JSONObject recordJson;
+
+            try {
+                recordJson = record.toJson();
+            }
+            catch (JSONException e) {
+                listener.onReceiveReponse(RecordApiManagerStatus.FAILED);
+                return;
+            }
+            recordsList.add(recordJson);
+        }
+
+        Call<ResponseApi> call = mRecordApiService.postRecords(recordsList);
+
+        call.enqueue(new Callback<ResponseApi>() {
+            @Override
+            public void onResponse(Call<ResponseApi> call, Response<ResponseApi> response) {
+                Log.v("OK", "response");
+                listener.onReceiveReponse(RecordApiManagerStatus.SUCCESS);
+            }
+
+            @Override
+            public void onFailure(Call<ResponseApi> call, Throwable t) {
+                Log.e("Err", "Error");
+                listener.onReceiveReponse(RecordApiManagerStatus.FAILED);
+            }
+        });
+    }
+
     public RecordApiManager(Context context) {
         mContext = context;
+        mRetrofit = new Retrofit.Builder().baseUrl(BASE_URL).addConverterFactory(GsonConverterFactory.create()).build();
+        mRecordApiService = mRetrofit.create(RecordApiService.class);
     }
 }

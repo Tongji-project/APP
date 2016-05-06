@@ -1,5 +1,8 @@
 package com.tongjiapp.remirobert.tongji_localisation;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import io.realm.RealmObject;
 
 /**
@@ -11,9 +14,15 @@ public class Record extends RealmObject {
     private DLocation mNetworkLocation;
     private String mTimeStamp;
 
-    public Record() {
+    public JSONObject toJson() throws JSONException {
+        JSONObject json = new JSONObject();
 
+        json.put("timestamp", getTimeStamp());
+        return json;
     }
+
+
+    public Record() {}
 
     public RecordDevice getDevice() {
         return mDevice;

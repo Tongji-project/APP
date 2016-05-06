@@ -1,5 +1,7 @@
 package com.tongjiapp.remirobert.tongji_localisation;
 
+import org.json.JSONObject;
+
 import java.util.List;
 
 import retrofit2.Call;
@@ -11,6 +13,9 @@ import retrofit2.http.POST;
  */
 public interface RecordApiService {
 
+    @POST("device")
+    Call<ResponseApi> postDevice(@Body JSONObject device);
+
     @POST("records")
-    Call<ResponseApi> postRecords(@Body List<Device> records);
+    Call<ResponseApi> postRecords(@Body List<JSONObject> records);
 }

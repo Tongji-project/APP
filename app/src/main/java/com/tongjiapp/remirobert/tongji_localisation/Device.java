@@ -1,14 +1,15 @@
 package com.tongjiapp.remirobert.tongji_localisation;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import io.realm.RealmObject;
-import io.realm.annotations.Required;
 
 /**
  * Created by remirobert on 02/05/16.
  */
 public class Device extends RealmObject {
 
-    @Required
     private String mDeviceId;
     private int mMcc;
     private int mMnc;
@@ -16,7 +17,20 @@ public class Device extends RealmObject {
     private String mPhoneModel;
     private int mAndroidVersion;
 
-    public Device() {}
+    public JSONObject toJson() throws JSONException {
+        JSONObject json = new JSONObject();
+
+        json.put("deviceId", getDeviceId());
+        json.put("mcc", getMcc());
+        json.put("mnc", getMnc());
+        json.put("operator", getOperatorName());
+        json.put("androidVersion", getAndroidVersion());
+        json.put("phoneModel", getPhoneModel());
+        return json;
+    }
+
+    public Device() {
+    }
 
     public String getOperatorName() {
         return mOperatorName;

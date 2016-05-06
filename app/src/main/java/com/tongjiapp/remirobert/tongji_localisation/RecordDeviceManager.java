@@ -6,6 +6,8 @@ import android.util.Log;
 
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
+import io.realm.RealmQuery;
+import io.realm.RealmResults;
 
 /**
  * Created by remirobert on 02/05/16.
@@ -30,7 +32,7 @@ public class RecordDeviceManager {
 
     private void initRealmInstance() {
         RealmConfiguration realmConfig = new RealmConfiguration.Builder(mContext).build();
-        Realm realm = Realm.getInstance(realmConfig);
+        mRealm = Realm.getInstance(realmConfig);
     }
 
     public RecordDeviceManager(Context context) {
@@ -58,28 +60,31 @@ public class RecordDeviceManager {
     }
 
     private void saveRecord(RecordDevice recordDevice) {
-
+//        List<Record> records =
     }
 
-    private void saveRecordDeviceInformation(Device device, RecordDevice recordDevice) {
-//        RealmQuery<Device> query = mRealm.where(Device.class);
+    private void saveRecordDeviceInformation(final Device device, final RecordDevice recordDevice) {
+        RealmQuery<Device> query = mRealm.where(Device.class);
 
-//        Device deviceRegistred = query.findFirst();
-//        if (deviceRegistred == null) {
-//            mRealm.beginTransaction();
-//            mRealm.copyToRealm(device);
-//            mRealm.commitTransaction();
-//            //Todo send data request here to the server
-//        }
+        RealmResults<Device> devices= mRealm.where(Device.class).findAll();
+        if (devices.size() == 0) {
+            mRecordApiManager.createNewDevice(device, new RecordApiManagerListener() {
+                @Override
+                public void onReceiveReponse(RecordApiManagerStatus status) {
+                    Log.v("OK", "status : " + status);
 
-        String jsonDevice = device.toString();
-
-        mRecordApiManager.createNewDevice(device, new RecordApiManagerListener() {
-            @Override
-            public void onReceiveReponse(RecordApiManagerStatus status) {
-                Log.v("OK", "status : " + status);
-            }
-        });
+                    if (status == RecordApiManagerStatus.SUCCESS) {
+                        mRealm.beginTransaction();
+                        mRealm.copyToRealm(device);
+                        mRealm.commitTransaction();
+                        saveRecord(recordDevice);
+                    }
+                }
+            });
+        }
+        else {
+            saveRecord(recordDevice);
+        }
     }
 
     public void newRecord(RecordDeviceManagerListener listener) {
@@ -90,7 +95,9 @@ public class RecordDeviceManager {
             @Override
             public void onReceiveDevice(Device device, RecordDevice recordDevice) {
                 mRecord.setDevice(recordDevice);
+
 //                saveRecordDeviceInformation(device, recordDevice);
+
                 fetchLocation(LocationManager.NETWORK_PROVIDER);
             }
         });
