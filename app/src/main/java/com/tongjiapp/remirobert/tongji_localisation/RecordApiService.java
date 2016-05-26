@@ -16,6 +16,9 @@ public interface RecordApiService {
     @POST("device")
     Call<ResponseApi> postDevice(@Body JSONObject device);
 
+    @POST("record")
+    Call<ResponseApi> postRecord(@Body JSONObject record);
+
     @POST("records")
     Call<ResponseApi> postRecords(@Body List<JSONObject> records);
 }

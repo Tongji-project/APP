@@ -3,10 +3,10 @@ package com.tongjiapp.remirobert.tongji_localisation;
 import android.content.Context;
 import android.location.LocationManager;
 import android.util.Log;
+import android.widget.Toast;
 
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
-import io.realm.RealmQuery;
 import io.realm.RealmResults;
 
 /**
@@ -19,6 +19,8 @@ interface RecordDeviceManagerListener {
 
 public class RecordDeviceManager {
 
+    private static final String TAG = "RecordDeviceManager";
+
     private Context mContext;
 
     private DeviceTelephonyManager mDeviceTelephonyManager;
@@ -26,6 +28,7 @@ public class RecordDeviceManager {
     private RecordApiManager mRecordApiManager;
 
     private Record mRecord;
+    private Device mDevice;
     private RecordDeviceManagerListener mRecordDeviceManagerListener;
 
     private Realm mRealm;
@@ -54,36 +57,66 @@ public class RecordDeviceManager {
                 else {
                     mRecord.setGpsLocation(location);
                     mRecordDeviceManagerListener.onRecordDeviceInformations(mRecord);
+                    saveRecordDeviceInformation(mDevice, mRecord.getDevice());
                 }
             }
         });
     }
 
-    private void saveRecord(RecordDevice recordDevice) {
-//        List<Record> records =
+    private void saveRecord() {
+        mRecordApiManager.createNewRecord(mRecord, mDevice.getDeviceId(), new RecordApiManagerListener() {
+            @Override
+            public void onReceiveReponse(RecordApiManagerStatus status) {
+                if (status == RecordApiManagerStatus.SUCCESS) {
+                    Log.v(TAG, "save new record success");
+                    Toast.makeText(mContext , "Success upload record",
+                                    Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    Toast.makeText(mContext , "Error upload record",
+                                    Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+
+    private void saveOrUpdateDevice(final Device device) {
+        mRealm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                realm.copyToRealmOrUpdate(device);
+                saveRecord();
+            }
+        });
     }
 
     private void saveRecordDeviceInformation(final Device device, final RecordDevice recordDevice) {
-        RealmQuery<Device> query = mRealm.where(Device.class);
+        RealmResults<Device> devices = mRealm.where(Device.class).findAll();
+        final Device localDevice = devices.where().equalTo("mDeviceId", device.getDeviceId()).findFirst();
 
-        RealmResults<Device> devices= mRealm.where(Device.class).findAll();
-        if (devices.size() == 0) {
+        if (localDevice == null || !localDevice.isUploaded()) {
             mRecordApiManager.createNewDevice(device, new RecordApiManagerListener() {
                 @Override
                 public void onReceiveReponse(RecordApiManagerStatus status) {
-                    Log.v("OK", "status : " + status);
-
                     if (status == RecordApiManagerStatus.SUCCESS) {
-                        mRealm.beginTransaction();
-                        mRealm.copyToRealm(device);
-                        mRealm.commitTransaction();
-                        saveRecord(recordDevice);
+                        if (localDevice != null) {
+                            mRealm.beginTransaction();
+                            localDevice.setUploaded(true);
+                            mRealm.commitTransaction();
+                            saveOrUpdateDevice(localDevice);
+                        }
+                        else {
+                            mRealm.beginTransaction();
+                            device.setUploaded(true);
+                            mRealm.commitTransaction();
+                            saveOrUpdateDevice(device);
+                        }
                     }
                 }
             });
         }
         else {
-            saveRecord(recordDevice);
+            saveOrUpdateDevice(device);
         }
     }
 
@@ -95,9 +128,7 @@ public class RecordDeviceManager {
             @Override
             public void onReceiveDevice(Device device, RecordDevice recordDevice) {
                 mRecord.setDevice(recordDevice);
-
-//                saveRecordDeviceInformation(device, recordDevice);
-
+                mDevice = device;
                 fetchLocation(LocationManager.NETWORK_PROVIDER);
             }
         });

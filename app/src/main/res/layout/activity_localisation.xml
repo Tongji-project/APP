@@ -15,7 +15,13 @@
         android:id="@+id/location_text_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Hello World!"/>
+        android:text="Location GPS"/>
+
+    <TextView
+        android:id="@+id/location_network_text_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Location Network"/>
 
     <Button
         android:id="@+id/button_get_localisation"

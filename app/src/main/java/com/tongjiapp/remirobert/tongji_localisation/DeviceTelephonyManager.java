@@ -1,10 +1,15 @@
 package com.tongjiapp.remirobert.tongji_localisation;
 
 import android.content.Context;
+import android.provider.Settings;
 import android.telephony.TelephonyManager;
 import android.telephony.gsm.GsmCellLocation;
 import android.text.TextUtils;
 import android.util.Log;
+
+import io.realm.Realm;
+import io.realm.RealmConfiguration;
+import io.realm.RealmResults;
 
 /**
  * Created by remirobert on 02/05/16.
@@ -39,11 +44,31 @@ public class DeviceTelephonyManager {
         GsmCellLocation cellLocation = new GsmCellLocation();
         final TelephonyManager telephonyManager = (TelephonyManager) mContext.getSystemService(Context.TELEPHONY_SERVICE);
         isFetched = false;
-        Log.v(TAG, "get informations telephony");
 
         String networkOperator = telephonyManager.getNetworkOperator();
 
-        final Device device = new Device();
+        RealmConfiguration realmConfig = new RealmConfiguration.Builder(mContext).build();
+        Realm realm = Realm.getInstance(realmConfig);
+
+        Device localDevice;
+        String deviceId = Settings.Secure.getString(mContext.getContentResolver(), Settings.Secure.ANDROID_ID);
+
+        RealmResults<Device> devices = realm.where(Device.class).findAll();
+
+        localDevice = devices.where().equalTo("mDeviceId", deviceId).findFirst();
+        Log.v(TAG, "find device for device id  : " + deviceId);
+        if (localDevice == null) {
+            Log.v(TAG, "local device null creation");
+            localDevice = new Device();
+        }
+
+        Log.v(TAG, "local device = " + localDevice);
+
+        realm.beginTransaction();
+        final Device device = localDevice;
+        localDevice.setDeviceId(deviceId);
+
+//        final Device device = new Device();
         final RecordDevice recordDevice = new RecordDevice();
 
         if (!TextUtils.isEmpty(networkOperator)) {
@@ -59,6 +84,8 @@ public class DeviceTelephonyManager {
         recordDevice.setCid(cellLocation.getCid());
         device.setAndroidVersion(getApiVersion());
         device.setPhoneModel(getDeviceModel());
+
+        realm.commitTransaction();
 
         mDeviceBatteryManager = new DeviceBatteryManager(mContext);
 

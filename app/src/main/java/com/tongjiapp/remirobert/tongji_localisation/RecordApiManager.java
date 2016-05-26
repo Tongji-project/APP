@@ -29,7 +29,7 @@ interface RecordApiManagerListener {
 
 public class RecordApiManager {
 
-    private static final String BASE_URL = "http://192.168.0.101:3000/";
+    private static final String BASE_URL = "http://tztztztztz.org:3000/";
 
     private Context mContext;
     private Retrofit mRetrofit;
@@ -45,21 +45,47 @@ public class RecordApiManager {
             return;
         }
 
-//        Call<ResponseApi> call = mRecordApiService.postDevice(json);
-//
-//        call.enqueue(new Callback<ResponseApi>() {
-//            @Override
-//            public void onResponse(Call<ResponseApi> call, Response<ResponseApi> response) {
-//                Log.v("OK", "response");
-//                listener.onReceiveReponse(RecordApiManagerStatus.SUCCESS);
-//            }
-//
-//            @Override
-//            public void onFailure(Call<ResponseApi> call, Throwable t) {
-//                Log.e("Err", "Error");
-//                listener.onReceiveReponse(RecordApiManagerStatus.FAILED);
-//            }
-//        });
+        Call<ResponseApi> call = mRecordApiService.postDevice(json);
+
+        call.enqueue(new Callback<ResponseApi>() {
+            @Override
+            public void onResponse(Call<ResponseApi> call, Response<ResponseApi> response) {
+                Log.v("OK", "response");
+                listener.onReceiveReponse(RecordApiManagerStatus.SUCCESS);
+            }
+
+            @Override
+            public void onFailure(Call<ResponseApi> call, Throwable t) {
+                Log.e("Err", "Error");
+                listener.onReceiveReponse(RecordApiManagerStatus.FAILED);
+            }
+        });
+    }
+
+    public void createNewRecord(Record record, String deviceId, final RecordApiManagerListener listener) {
+        JSONObject json;
+        try {
+            json = record.toJson();
+            json.put("device_id", deviceId);
+        } catch (JSONException e) {
+            listener.onReceiveReponse(RecordApiManagerStatus.FAILED);
+            return;
+        }
+        Call<ResponseApi> call = mRecordApiService.postRecord(json);
+
+        call.enqueue(new Callback<ResponseApi>() {
+            @Override
+            public void onResponse(Call<ResponseApi> call, Response<ResponseApi> response) {
+                Log.v("OK", "response Record");
+                listener.onReceiveReponse(RecordApiManagerStatus.SUCCESS);
+            }
+
+            @Override
+            public void onFailure(Call<ResponseApi> call, Throwable t) {
+                Log.e("Err", "Error");
+                listener.onReceiveReponse(RecordApiManagerStatus.FAILED);
+            }
+        });
     }
 
     public void createRecords(List<Record> records, final RecordApiManagerListener listener) {
@@ -70,8 +96,7 @@ public class RecordApiManager {
 
             try {
                 recordJson = record.toJson();
-            }
-            catch (JSONException e) {
+            } catch (JSONException e) {
                 listener.onReceiveReponse(RecordApiManagerStatus.FAILED);
                 return;
             }

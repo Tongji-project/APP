@@ -43,6 +43,9 @@ public class DeviceSignalStrengthManager {
                     int signalStrengthPercent = getSignalStrengthInPercent(signalStrength.getGsmSignalStrength());
                     listener.onReceiveSignalStrength(getSignalValue(signalStrength), signalStrengthPercent);
                 }
+                else {
+                    listener.onReceiveSignalStrength(0, 0);
+                }
                 mTelephonyManager.listen(mPhoneStateListener, LISTEN_NONE);
             }
         };

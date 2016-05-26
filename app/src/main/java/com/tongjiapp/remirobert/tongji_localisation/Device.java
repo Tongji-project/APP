@@ -4,22 +4,24 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
 
 /**
  * Created by remirobert on 02/05/16.
  */
 public class Device extends RealmObject {
 
+    @PrimaryKey
     private String mDeviceId;
     private int mMcc;
     private int mMnc;
     private String mOperatorName;
     private String mPhoneModel;
     private int mAndroidVersion;
+    private boolean uploaded;
 
     public JSONObject toJson() throws JSONException {
         JSONObject json = new JSONObject();
-
         json.put("deviceId", getDeviceId());
         json.put("mcc", getMcc());
         json.put("mnc", getMnc());
@@ -30,6 +32,14 @@ public class Device extends RealmObject {
     }
 
     public Device() {
+    }
+
+    public boolean isUploaded() {
+        return uploaded;
+    }
+
+    public void setUploaded(boolean uploaded) {
+        this.uploaded = uploaded;
     }
 
     public String getOperatorName() {
