@@ -14,7 +14,7 @@ import io.realm.RealmResults;
  */
 
 interface RecordDeviceManagerListener {
-    void onRecordDeviceInformations(Record record);
+    void onRecordDeviceInformations(Record record, Device device);
 }
 
 public class RecordDeviceManager {
@@ -56,7 +56,7 @@ public class RecordDeviceManager {
                 }
                 else {
                     mRecord.setGpsLocation(location);
-                    mRecordDeviceManagerListener.onRecordDeviceInformations(mRecord);
+                    mRecordDeviceManagerListener.onRecordDeviceInformations(mRecord, mDevice);
                     saveRecordDeviceInformation(mDevice, mRecord.getDevice());
                 }
             }

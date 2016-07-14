@@ -11,7 +11,7 @@ import android.os.BatteryManager;
  */
 
 interface DeviceBatteryManagerListener {
-    void onReceiveBatteryLevel(int level);
+    void onReceiveBatteryLevel(int level, double batteryCapacity);
 }
 
 public class DeviceBatteryManager {
@@ -21,6 +21,30 @@ public class DeviceBatteryManager {
 
     public DeviceBatteryManager(Context context) {
         mContext = context;
+    }
+
+    private void getBatteryCapacity(final DeviceBatteryManagerListener listener, int level) {
+        Object mPowerProfile_ = null;
+
+        final String POWER_PROFILE_CLASS = "com.android.internal.os.PowerProfile";
+
+        try {
+            mPowerProfile_ = Class.forName(POWER_PROFILE_CLASS)
+                    .getConstructor(Context.class).newInstance(mContext);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        try {
+            double batteryCapacity = (Double) Class
+                    .forName(POWER_PROFILE_CLASS)
+                    .getMethod("getAveragePower", java.lang.String.class)
+                    .invoke(mPowerProfile_, "battery.capacity");
+
+            listener.onReceiveBatteryLevel(level, batteryCapacity);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void getBatteryLevel(final DeviceBatteryManagerListener listener) {
@@ -35,7 +59,8 @@ public class DeviceBatteryManager {
                     level = (rawlevel * 100) / scale;
                 }
                 if (listener != null) {
-                    listener.onReceiveBatteryLevel(level);
+                    getBatteryCapacity(listener, level);
+                    //listener.onReceiveBatteryLevel(level);
                 }
                 mContext.unregisterReceiver(mBroadcastReceiver);
             }

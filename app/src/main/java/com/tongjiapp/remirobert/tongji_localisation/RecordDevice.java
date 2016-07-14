@@ -8,12 +8,21 @@ import io.realm.RealmObject;
 public class RecordDevice extends RealmObject {
 
     private int mBatteryLevel;
+    private double mBatteryCapacity;
     private int mSignalStrength;
     private int mCid;
     private int mLac;
     private String mCountryIso;
 
     public RecordDevice() {}
+
+    public double getBatteryCapacity() {
+        return mBatteryCapacity;
+    }
+
+    public void setBatteryCapacity(double batteryCapacity) {
+        mBatteryCapacity = batteryCapacity;
+    }
 
     public int getBatteryLevel() {
         return mBatteryLevel;

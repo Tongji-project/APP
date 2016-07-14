@@ -2,10 +2,13 @@ package com.tongjiapp.remirobert.tongji_localisation;
 
 import android.content.Context;
 import android.provider.Settings;
+import android.telephony.CellInfo;
 import android.telephony.TelephonyManager;
 import android.telephony.gsm.GsmCellLocation;
 import android.text.TextUtils;
 import android.util.Log;
+
+import java.util.List;
 
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
@@ -41,8 +44,8 @@ public class DeviceTelephonyManager {
     }
 
     public void getGsmInformation(final DeviceTelephonyManagerListener listener) {
-        GsmCellLocation cellLocation = new GsmCellLocation();
-        final TelephonyManager telephonyManager = (TelephonyManager) mContext.getSystemService(Context.TELEPHONY_SERVICE);
+        final TelephonyManager telephonyManager =  (TelephonyManager)mContext.getSystemService(Context.TELEPHONY_SERVICE);
+        GsmCellLocation cellLocation = (GsmCellLocation)telephonyManager.getCellLocation();
         isFetched = false;
 
         String networkOperator = telephonyManager.getNetworkOperator();
@@ -78,6 +81,9 @@ public class DeviceTelephonyManager {
             device.setMcc(mcc);
             device.setMnc(mnc);
         }
+
+        List<CellInfo> NeighboringList = telephonyManager.getAllCellInfo();
+
         recordDevice.setCountryIso(telephonyManager.getNetworkCountryIso());
         device.setOperatorName(telephonyManager.getNetworkOperatorName());
         recordDevice.setLac(cellLocation.getLac());
@@ -91,8 +97,9 @@ public class DeviceTelephonyManager {
 
         mDeviceBatteryManager.getBatteryLevel(new DeviceBatteryManagerListener() {
             @Override
-            public void onReceiveBatteryLevel(int level) {
+            public void onReceiveBatteryLevel(int level, double capacity) {
                 recordDevice.setBatteryLevel(level);
+                recordDevice.setBatteryCapacity(capacity);
 
                 mDeviceSignalStrengthManager = new DeviceSignalStrengthManager(telephonyManager);
                 mDeviceSignalStrengthManager.getSignalStrength(new DeviceSignalStrengthManagerListener() {

@@ -18,6 +18,19 @@ public class LocalisationActivity extends AppCompatActivity {
 
     private TextView mLocationGPSTextView;
     private TextView mLocationNetworkTextView;
+    private TextView mSignalStrenghtTextView;
+    private TextView mCidTextView;
+    private TextView mLacTextView;
+    private TextView mIsoCountryTextView;
+    private TextView mBatteryTextView;
+    private TextView mDeviceIdTextView;
+    private TextView mMccTextView;
+    private TextView mMncTextView;
+    private TextView mOperatorTextView;
+    private TextView mDeviceModelTextView;
+    private TextView mAndroidVersionTextView;
+    private TextView mBatteryCapacity;
+
     private Button mButtonLocalisation;
 
     private RecordDeviceManager mRecordDeviceManager;
@@ -25,7 +38,7 @@ public class LocalisationActivity extends AppCompatActivity {
     private void recordNewLocation() {
         mRecordDeviceManager.newRecord(new RecordDeviceManagerListener() {
             @Override
-            public void onRecordDeviceInformations(Record record) {
+            public void onRecordDeviceInformations(Record record, Device device) {
                 Log.v(TAG, "did record new device informations");
                 double latGPS = record.getGpsLocation().getLat();
                 double lonGPS = record.getGpsLocation().getLon();
@@ -33,8 +46,26 @@ public class LocalisationActivity extends AppCompatActivity {
                 double latNet = record.getNetworkLocation().getLat();
                 double lonNet = record.getNetworkLocation().getLon();
 
-                mLocationGPSTextView.setText("GPS : " + latGPS + ":" + lonGPS);
-                mLocationNetworkTextView.setText("GPS : " + latNet + ":" + lonNet);
+                mLocationGPSTextView.setText("" + latGPS + ":" + lonGPS);
+                mLocationNetworkTextView.setText("" + latNet + ":" + lonNet);
+
+                mSignalStrenghtTextView.setText("" + record.getDevice().getSignalStrength());
+                mCidTextView.setText("" + record.getDevice().getCid());
+                mLacTextView.setText("" + record.getDevice().getLac());
+                mIsoCountryTextView.setText("" + record.getDevice().getCountryIso());
+                mBatteryTextView.setText("" + record.getDevice().getBatteryLevel());
+
+
+                mMccTextView.setText("" + device.getMcc());
+                mMncTextView.setText("" + device.getMnc());
+
+                mDeviceIdTextView.setText("" + device.getDeviceId());
+                mOperatorTextView.setText("" + device.getOperatorName());
+
+                mDeviceModelTextView.setText("" + device.getPhoneModel());
+                mAndroidVersionTextView.setText("" + device.getAndroidVersion());
+
+                mBatteryCapacity.setText("" + record.getDevice().getBatteryCapacity());
             }
         });
     }
@@ -60,6 +91,19 @@ public class LocalisationActivity extends AppCompatActivity {
 
         mLocationGPSTextView = (TextView) findViewById(R.id.location_text_view);
         mLocationNetworkTextView = (TextView) findViewById(R.id.location_network_text_view);
+        mSignalStrenghtTextView = (TextView) findViewById(R.id.signal_strenght_text_view);
+        mCidTextView = (TextView) findViewById(R.id.cid_text_view);
+        mLacTextView = (TextView) findViewById(R.id.lac_text_view);
+        mIsoCountryTextView = (TextView) findViewById(R.id.country_iso_text_view);
+        mBatteryTextView = (TextView) findViewById(R.id.battery_text_view);
+        mDeviceIdTextView = (TextView) findViewById(R.id.device_id_text_view);
+        mMccTextView = (TextView) findViewById(R.id.mcc_text_view);
+        mMncTextView = (TextView) findViewById(R.id.mnc_text_view);
+        mOperatorTextView = (TextView) findViewById(R.id.operator_text_view);
+        mAndroidVersionTextView = (TextView) findViewById(R.id.android_text_view);
+        mDeviceModelTextView = (TextView) findViewById(R.id.model_device_text_view);
+        mBatteryCapacity = (TextView) findViewById(R.id.battery_capacity_text_view);
+
         mButtonLocalisation = (Button) findViewById(R.id.button_get_localisation);
         mRecordDeviceManager = new RecordDeviceManager(this);
 
@@ -68,6 +112,7 @@ public class LocalisationActivity extends AppCompatActivity {
             public void onClick(View v) {
                 mLocationNetworkTextView.setText("");
                 mLocationGPSTextView.setText("");
+                mSignalStrenghtTextView.setText("");
                 checkPermissionUser();
             }
         });

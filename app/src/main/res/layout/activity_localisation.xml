@@ -1,31 +1,235 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<android.support.v4.widget.NestedScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.tongjiapp.remirobert.tongji_localisation.LocalisationActivity">
+    android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/location_text_view"
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Location GPS"/>
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:paddingBottom="@dimen/activity_vertical_margin"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingTop="@dimen/activity_vertical_margin"
+        tools:context="com.tongjiapp.remirobert.tongji_localisation.LocalisationActivity">
 
-    <TextView
-        android:id="@+id/location_network_text_view"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Location Network"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="#ffffff"
+            android:background="@color/colorPrimary"
+            android:text="LOCATION"
+            android:textSize="30dp"
+            />
 
-    <Button
-        android:id="@+id/button_get_localisation"
-        android:text="get localisation"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
-</LinearLayout>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Location GPS :"
+            android:textSize="20sp"/>
+
+        <TextView
+            android:id="@+id/location_text_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Location Network :"
+            android:textSize="20sp"/>
+
+
+        <TextView
+            android:id="@+id/location_network_text_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="#ffffff"
+            android:background="@color/colorPrimary"
+            android:text="CELLULAR"
+            android:textSize="30sp"
+            />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Signal strength :"
+            android:textSize="20sp"
+            />
+
+        <TextView
+            android:id="@+id/signal_strenght_text_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="CID :"
+            android:textSize="20sp"
+            />
+
+        <TextView
+            android:id="@+id/cid_text_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="LAC :"
+            android:textSize="20sp"
+            />
+
+        <TextView
+            android:id="@+id/lac_text_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="MCC :"
+            android:textSize="20sp"
+            />
+
+        <TextView
+            android:id="@+id/mcc_text_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="MNC :"
+            android:textSize="20sp"
+            />
+
+        <TextView
+            android:id="@+id/mnc_text_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="OPERATOR :"
+            android:textSize="20sp"
+            />
+
+        <TextView
+            android:id="@+id/operator_text_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            />
+
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Country ISO :"
+            android:textSize="20sp"
+            />
+
+        <TextView
+            android:id="@+id/country_iso_text_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="#ffffff"
+            android:background="@color/colorPrimary"
+            android:text="DEVICE"
+            android:textSize="30sp"
+            />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Device Id :"
+            android:textSize="20sp"
+            />
+
+        <TextView
+            android:id="@+id/device_id_text_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            />
+
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Battery status :"
+            android:textSize="20sp"
+            />
+
+        <TextView
+            android:id="@+id/battery_text_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Battery capacity :"
+            android:textSize="20sp"
+            />
+
+        <TextView
+            android:id="@+id/battery_capacity_text_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Android version :"
+            android:textSize="20sp"
+            />
+
+        <TextView
+            android:id="@+id/android_text_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Model device :"
+            android:textSize="20sp"
+            />
+
+        <TextView
+            android:id="@+id/model_device_text_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            />
+
+        <Button
+            android:id="@+id/button_get_localisation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="get localisation"/>
+    </LinearLayout>
+</android.support.v4.widget.NestedScrollView>
